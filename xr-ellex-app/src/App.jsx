@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
-import { Environment } from '@react-three/drei';
+import { Environment, OrbitControls,PerspectiveCamera } from '@react-three/drei';
 import Scene from './Scene';
 
 const App = () => {
@@ -9,9 +9,10 @@ const App = () => {
     <Canvas style={{ width: "100vw", height: "100vh" }} shadows>
       <Suspense fallback={null}>
         <Physics debug>
-          <Scene />
+          <Scene>
+          </Scene>
         </Physics>
-        <Environment preset="studio" background />
+        <Environment preset="sunset" background />
       </Suspense>
     </Canvas>
   );

@@ -40,3 +40,49 @@
 .read-the-docs {
   color: #888;
 }
+
+
+/* Add this to your index.css or App.css */
+.controls {
+  position: fixed;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
+
+.control-button {
+  width: 60px;
+  height: 60px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 2px solid #646cff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+}
+
+.control-button:active {
+  background-color: #646cff;
+}
+
+.control-button.arrow-up {
+  transform: rotate(270deg);
+}
+
+.control-button.arrow-down {
+  transform: rotate(90deg);
+}
+
+.control-button.arrow-left {
+  transform: rotate(180deg);
+}
+
+.control-button.arrow-right {
+  transform: rotate(0deg);
+}
