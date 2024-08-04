@@ -1,11 +1,43 @@
 // SoundObjects.jsx
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { useFrame } from '@react-three/fiber';
 import { PositionalAudio, useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-const SoundObjects = ({ position, url, bodyPart, listenerPosition }) => {
+// TODO pass in finalX, finalY, finalY from Scene
+const SoundObjects =  React.forwardRef((
+  { position, 
+    collectedPosition, 
+    url,
+    bodyPart, 
+    listenerPosition, 
+    onCollect,
+    register
+  }, ref) => {
   const soundRef = useRef();
+  const objectRef = ref || useRef();
   const { nodes } = useGLTF('/src/assets/models/Araquati_parts.gltf');
+  const [collected, setCollected] = useState(false);
+  // Method to trigger when object is collected
+  const handleCollect = () => {
+    setCollected(true);
+    if (onCollect) onCollect(bodyPart);
+  };
+
+  useEffect(() => {
+    if (register) {
+      // Register the objectRef and handleCollect together
+      register({ objectRef, handleCollect });
+    }
+  }, [register]);
+
+  useFrame(() => {
+    if (collected) {
+      // Move the object to its designated position in the final body
+      objectRef.current.position.lerp(new THREE.Vector3(collectedPosition.X, collectedPosition.Y, collectedPosition.Z), 0.1);
+    }
+  });
+
 
   useEffect(() => {
     const handleUserGesture = () => {
@@ -43,7 +75,7 @@ const SoundObjects = ({ position, url, bodyPart, listenerPosition }) => {
   };
 
   return (
-   <mesh position={position}>
+   <mesh ref={objectRef} position={position}>
       <PositionalAudio
         ref={soundRef}
         url={url}
@@ -64,7 +96,7 @@ const SoundObjects = ({ position, url, bodyPart, listenerPosition }) => {
       )}
     </mesh>
   );
-};
+});
 
 export default SoundObjects;
 
