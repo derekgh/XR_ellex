@@ -1,83 +1,100 @@
-import React from 'react';
-import { useGLTF, RoundedBox } from '@react-three/drei';
+import React, { useEffect, useState } from 'react';
+import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-export function BodyParts({ position }) {
-  const { nodes } = useGLTF('/src/assets/models/Araquati_parts.gltf');
+function BodyParts({ position, opacityMap }) {
+  // Load individual GLB models
+  const legGLTF = useGLTF('./src/assets/models/Araquati_parts_leg.glb');
+  const armGLTF = useGLTF('./src/assets/models/Araquati_parts_arm.glb');
+  const headGLTF = useGLTF('./src/assets/models/Araquati_parts_head.glb');
+  const torsoGLTF = useGLTF('./src/assets/models/Araquati_parts_torso.glb');
 
-  const chromeMaterial = (color) => new THREE.MeshStandardMaterial({
+  const [currentOpacityMap, setCurrentOpacityMap] = useState(opacityMap);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentOpacityMap((prev) => {
+        if (!prev) return opacityMap;
+
+        const updatedMap = { ...prev };
+        Object.keys(opacityMap).forEach((key) => {
+          if (prev[key]) {
+            updatedMap[key].opacity = THREE.MathUtils.lerp(prev[key].opacity, opacityMap[key].opacity, 0.05);
+            updatedMap[key].emissiveIntensity = THREE.MathUtils.lerp(prev[key].emissiveIntensity, opacityMap[key].emissiveIntensity, 0.05);
+          }
+        });
+        return updatedMap;
+      });
+    }, 10);
+
+    return () => clearInterval(interval);
+  }, [opacityMap]);
+
+  const chromeMaterial = (color, opacity, emissiveIntensity) => new THREE.MeshStandardMaterial({
     color,
     metalness: 1,
     roughness: 0,
-    envMapIntensity: 1
+    envMapIntensity: 1,
+    emissive: new THREE.Color(color),
+    emissiveIntensity,
+    transparent: true,
+    opacity,
   });
 
   return (
     <group position={position}>
-      {/* Main body part */}
-      <mesh 
-      geometry={nodes.Body.geometry}
-      material={chromeMaterial('red')}
-      scale={[0.01, 0.01, 0.01]} />
-
       {/* Right Leg */}
       <mesh
-        geometry={nodes.leg_remesh.geometry}
-        material={chromeMaterial('darkgrey')}
+        geometry={legGLTF.nodes.leg_remesh.geometry}
+        material={chromeMaterial('darkgrey', currentOpacityMap.rightLeg.opacity, currentOpacityMap.rightLeg.emissiveIntensity)}
         position={[-0.5, -1.5, 0]}
         scale={[0.01, 0.01, 0.01]}
       />
-      {/* Left Leg (Mirrored) */}
+      {/* Left Leg */}
       <mesh
-        geometry={nodes.leg_remesh.geometry}
-        material={chromeMaterial('darkgrey')}
+        geometry={legGLTF.nodes.leg_remesh.geometry}
+        material={chromeMaterial('darkgrey', currentOpacityMap.leftLeg.opacity, currentOpacityMap.leftLeg.emissiveIntensity)}
         position={[0.5, -1.5, 0]}
         scale={[-0.01, 0.01, 0.01]}
       />
 
       {/* Right Arm */}
       <mesh
-        geometry={nodes.arm_remesh.geometry}
-        material={chromeMaterial('grey')}
+        geometry={armGLTF.nodes.arm_remesh.geometry}
+        material={chromeMaterial('grey', currentOpacityMap.rightArm.opacity, currentOpacityMap.rightArm.emissiveIntensity)}
         position={[-1, 1.5, 0]}
         scale={[0.01, 0.01, 0.01]}
       />
-      {/* Left Arm (Mirrored) */}
+      {/* Left Arm */}
       <mesh
-        geometry={nodes.arm_remesh.geometry}
-        material={chromeMaterial('grey')}
+        geometry={armGLTF.nodes.arm_remesh.geometry}
+        material={chromeMaterial('grey', currentOpacityMap.leftArm.opacity, currentOpacityMap.leftArm.emissiveIntensity)}
         position={[1, 1.5, 0]}
         scale={[-0.01, 0.01, 0.01]}
       />
 
       {/* Head */}
       <mesh
-        geometry={nodes.head_remesh.geometry}
-        material={chromeMaterial('grey')}
+        geometry={headGLTF.nodes.head_remesh.geometry}
+        material={chromeMaterial('grey', currentOpacityMap.head.opacity, currentOpacityMap.head.emissiveIntensity)}
         position={[0, 2.6, 0]}
         scale={[0.01, 0.01, 0.01]}
       />
 
       {/* Torso */}
       <mesh
-        geometry={nodes.torso_remesh.geometry}
-        material={chromeMaterial('grey')}
+        geometry={torsoGLTF.nodes.torso_remesh.geometry}
+        material={chromeMaterial('grey', currentOpacityMap.torso.opacity, currentOpacityMap.torso.emissiveIntensity)}
         position={[0, 0.6, 0]}
         scale={[0.01, 0.01, 0.01]}
       />
-
-<RoundedBox
-  args={[8 , 1, 8]} // Width, height, depth. Default is [1, 1, 1]
-  radius={.2} // Radius of the rounded corners. Default is 0.05
-  smoothness={4} // The number of curve segments. Default is 4
-  bevelSegments={4} // The number of bevel segments. Default is 4, setting it to 0 removes the bevel, as a result the texture is applied to the whole geometry.
-  creaseAngle={0.4} // Smooth normals everywhere except faces that meet at an angle greater than the crease angle
-    position={[0,-9.6,0]}
->
-  <meshNormalMaterial   />
-</RoundedBox>
     </group>
   );
 }
 
-useGLTF.preload('/src/assets/models/Araquati_parts.gltf');
+useGLTF.preload('./src/assets/models/Araquati_parts_leg.glb');
+useGLTF.preload('./src/assets/models/Araquati_parts_arm.glb');
+useGLTF.preload('./src/assets/models/Araquati_parts_head.glb');
+useGLTF.preload('./src/assets/models/Araquati_parts_torso.glb');
+
+export default BodyParts;

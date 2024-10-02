@@ -13,32 +13,191 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
   overflow: hidden;
+  background-color: #0500FF;
+  animation: backgroundCycle 10s infinite alternate;
+shadow
 }
 
-body {
+.frame {
+  position: relative;
+  border: 0.2rem solid #DAFF00;
+  max-width: calc(100vw - 10vh);
+  margin: 5vh auto;
+  border-radius: 1rem;
+  max-height: 90vh;
+  background-color: #0500FF;
+}
+/* 
+.xp-aura-zone {
+  position: absolute;
+  top: 10%;
+  left: 2%;
+  width: 100px;
+  height: 200px;
+  border: 2px solid red;
+  color: yellow;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2;
+} */
+
+.logo-text-zone {
+  position: absolute;
+  top: 2vh;
+  right: 2vh;
+  width: 33vw;
+  max-width: 10rem;
+  /* border: 2px solid limegreen; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 2;
+  color: #DAFF00;
+  cursor: default;
+  font-size: 0.66rem;
 }
 
-#root {
+.logo-image {
+  max-width: 100%;
+  width: auto;
+  height: auto;
+}
+
+.zone-star-zone {
+  position: absolute;
+  bottom: 1.5vh;
+  right: 0.5rem;
+  min-width: 6rem;
+  max-width: 12vw;
+  /* max-width: 20rem; */
+  /* height: 10vh; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.name-divet-area {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  width: 33vw;
+  max-width: 10rem;
+  /* height: 10vh; */
+  /* height: 5vh; */
+  border: 0.2rem solid #DAFF00;
+border-radius: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+  padding: 1rem;
+}
+
+/* Aura Circle */
+.aura-circle {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 100%;
+  background: radial-gradient(circle, rgba(218, 255, 0, 0.7), transparent);
+  box-shadow: 0 0 15px rgba(218, 255, 0, 0.5);
+  margin-bottom: 20px;
+}
+
+/* XP Meter */
+.xp-meter {
+  width: 20px;
+  height: 150px;
+  background: linear-gradient(to bottom, rgba(218, 255, 0, 0.2), rgba(218, 255, 0, 0.5));
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* XP Fill */
+.xp-fill {
   width: 100%;
-  height: 100%;
+  background-color: #DAFF00;
+  position: absolute;
+  bottom: 0;
+  transition: height 0.5s ease;
+}
+
+/* XP Label */
+.xp-label {
+  color: #DAFF00;
+  font-family: Arial, sans-serif;
+  font-size: 1rem;
+  margin-top: 10px;
+  text-align: center;
+  transform: rotate(-90deg);
+}
+
+/* XP/AURA Zone */
+.xp-aura-zone {
+  position: absolute;
+  top: 2vh;
+  left: 2vh;
+  width: 100px;
+  height: auto;
+  /* border: 2px solid red; */
+  color: yellow;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.collection-message {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+  padding: 15px 25px;
+  border-radius: 10px;
+  color: #ffffff; /* Text color */
+  font-size: 1.5em;
+  text-align: center;
+  z-index: 1000; /* Ensure it overlays other elements */
+}
+
+.collection-message p {
+  margin: 0;
+}
+
+
+@keyframes backgroundCycle {
+  0% {
+    background-color: #201f8e;
+  }
+  50% {
+    background-color: #0500FF;
+  }
+  100% {
+    background-color: #0d0c36;
+  }
+}
+ 
+
+a {
+  font-weight: 500;
+  color: #0500FF;
+  text-decoration: inherit;
+  transition: color 0.25s;
+}
+a:hover {
+  color: #535bf2;
 }
 
 h1 {
@@ -46,20 +205,53 @@ h1 {
   line-height: 1.1;
 }
 
+
+.hudWrapper {
+  padding: 1rem;
+  position: relative;
+  width: 100vw;
+  height: 1010vh;
+  /* border: solid blue 1rem; */
+  display: flex;
+}
+
+#hudTitle {
+  position: relative;
+  /* border: solid green 1rem; */
+  width: fit-content;
+  padding: 1rem;
+}
+
+#button-container {
+  position: relative;
+  /* border: solid purple 1px; */
+  width: fit-content;
+  text-align: center;
+  bottom: 0;
+  padding: 1rem;
+}
+
 button {
-  border-radius: 8px;
+  border-radius: 90%;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
-  font-size: 1em;
+  font-size: 0.6em;
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  width: 5rem;
+  height: 5rem;
+  text-align: center;
+  letter-spacing: 0.1rem;
+  text-transform: uppercase;
 }
+
 button:hover {
-  border-color: #646cff;
+  border-color: #0500FF;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -71,9 +263,13 @@ button:focus-visible {
     background-color: #ffffff;
   }
   a:hover {
-    color: #747bff;
+    color: #0500FF;
   }
   button {
     background-color: #f9f9f9;
   }
 }
+
+
+
+

@@ -1,83 +1,32 @@
 import React from 'react';
 import { RigidBody } from "@react-three/rapier";
-import { useGLTF, useTexture } from '@react-three/drei';
+import { useTexture, useGLTF } from '@react-three/drei';
 import * as THREE from "three";
+import CityBuildings from './CityBuildings';
+import GenerateCylinders from './GenerateCylinders';
+import Pedestal from './Pedestal';
+import Bowl from './Bowl';
+
 
 const angleToRadians = (angleInDeg) => (Math.PI / 180) * angleInDeg;
 
 export function Walls() {
-  // Load textures
-  const [brickDiff, brickRough, brickNormal, asphaltDiff, asphaltRough, asphaltNormal] = useTexture([
-    '/src/assets/tex/brick-d.jpg',
-    '/src/assets/tex/brick-r.jpg',
-    '/src/assets/tex/brick-n.jpg',
-    '/src/assets/tex/asphalt-d.jpg',
-    '/src/assets/tex/asphalt-r.jpg',
-    '/src/assets/tex/asphalt-n.jpg',
-  ]);
 
-  // Load the cityblock model
-  const { scene: cityBlock } = useGLTF('/src/assets/models/cityblock.glb');
-  cityBlock.scale.set(0.5, 0.5, 0.5);  // Scale down the city model
-
-  // Tile the brick textures
-  [brickDiff, brickRough, brickNormal].forEach(texture => {
-    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(16, 4);
-  });
-
-  // Tile the asphalt textures
-  [asphaltDiff, asphaltRough, asphaltNormal].forEach(texture => {
-    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(32, 32);
-  });
-
-  // Create a normal material with standard properties
-  const standardMaterial = new THREE.MeshStandardMaterial({
-    color: "gray",  // Basic color
-    metalness: 0.1, // Minimal metallic reflection
-    roughness: 0.8, // Rough surface
-  });
-
-  // Apply the standard material to the cityBlock model
-  cityBlock.traverse((node) => {
-    if (node.isMesh) {
-      node.material = standardMaterial;
-    }
-  });
-
-  const wallData = [
-    { position: [0, 0, -100], rotation: [0, 0, 0] },
-    { position: [0, 0, 100], rotation: [0, 0, 0] },
-    { position: [100, 0, 0], rotation: [0, angleToRadians(90), 0] },
-    { position: [-100, 0, 0], rotation: [0, angleToRadians(-90), 0] },
+  const pathVertices = [
+    [-100, 0, 0], [0, 0, -100], [100, 0, 0], [0, 0, 100],
+    [-100, 0, 50], [50, 0, 50], [50, 0, -50], [-50, 0, -50]
   ];
+
+  const getDirectionAndRotation = (start, end) => {
+    const direction = new THREE.Vector3().subVectors(end, start).normalize();
+    const angle = Math.atan2(direction.z, direction.x);
+    return [0, angle, 0];
+  };
 
   return (
     <>
-      {/* Walls */}
-      {wallData.map((item, index) => (
-        <RigidBody
-          key={index}
-          colliders="cuboid"
-          lockTranslations
-          lockRotations
-          position={item.position}
-          rotation={item.rotation}
-        >
-          <mesh>
-            <planeGeometry args={[200, 50]} />
-            <meshStandardMaterial 
-              map={brickDiff} 
-              roughnessMap={brickRough} 
-              normalMap={brickNormal} 
-              side={THREE.DoubleSide} 
-            />
-          </mesh>
-        </RigidBody>
-      ))}
+      
 
-      {/* Floor */}
       <RigidBody
         colliders="cuboid"
         lockTranslations
@@ -88,27 +37,36 @@ export function Walls() {
         restitution={0.001}
       >
         <mesh receiveShadow>
-          <planeGeometry args={[200, 200]} />
+          <planeGeometry args={[600, 600]} />
           <meshStandardMaterial 
-            map={asphaltDiff} 
-            roughnessMap={asphaltRough} 
-            normalMap={asphaltNormal} 
-            side={THREE.DoubleSide} 
+            transparent
+            opacity={0}
           />
         </mesh>
       </RigidBody>
 
-      {/* Cityblock Model */}
-      <RigidBody 
-        colliders="trimesh" 
-        position={[-12, -2, 0]}
-        restitution={0} // Set bounciness to zero
-        lockTranslations
+    
+        <group scale={[2, 2, 2]} position={[0, -9.1, 0]}>
+          <GenerateCylinders 
+              steps={6}
+              topRadius={2}
+              stepHeight={0.26}
+              radiusIncreaseRate={2}
+            />
+      <RigidBody
+        colliders="cuboid"
         lockRotations
-        scale={0.015}
+        lockTranslations
       >
-        <primitive object={cityBlock} />
-      </RigidBody>
+          <Pedestal />
+          <Bowl />
+        </RigidBody>
+        </group>
+   
+
+   
     </>
   );
 }
+
+export default Walls;
